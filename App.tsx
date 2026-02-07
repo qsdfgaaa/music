@@ -9,6 +9,7 @@ import Profile from './components/Profile';
 import AuthView from './components/AuthView';
 import PlaylistQueue from './components/PlaylistQueue';
 import NowPlayingView from './components/NowPlayingView';
+import AIInspiration from './components/AIInspiration';
 import { CURRENT_SONG } from './constants';
 import { Song } from './types';
 
@@ -61,6 +62,7 @@ const App: React.FC = () => {
 
   const handlePlaySong = (song?: Partial<Song>) => {
     if (song) {
+      // 这里的逻辑可以优化为从 RECOMMENDED_SONGS 中查找更完整的数据
       setCurrentSong({ ...currentSong, ...song } as Song);
       setIsPlaying(true);
       setCurrentTime(0);
@@ -95,6 +97,8 @@ const App: React.FC = () => {
         return <Home onPlaySong={handlePlaySong} onNavigate={() => handleNavigateToHall('分类歌单')} />;
       case 'hall':
         return <MusicHall onPlaySong={handlePlaySong} initialCategory={hallTab} />;
+      case 'ai':
+        return <AIInspiration onPlaySong={handlePlaySong} />;
       case 'profile':
         return isLoggedIn ? <Profile /> : <AuthView onLoginSuccess={handleLoginSuccess} />;
       default:
