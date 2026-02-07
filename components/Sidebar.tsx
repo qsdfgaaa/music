@@ -117,13 +117,12 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, isLoggedIn, onTabChange, o
         <div className="mb-8">
           <p className="px-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-4">我的音乐</p>
           <div className="space-y-1">
-            <NavItem icon={<HeartIcon />} label="我喜欢" />
-            <NavItem icon={<ClockIcon />} label="最近播放" />
-            <NavItem icon={<DownloadIcon />} label="本地下载" />
+            <NavItem icon={<HeartIcon />} label="我喜欢" active={activeTab === 'favorites'} onClick={() => onTabChange('favorites')} />
+            <NavItem icon={<ClockIcon />} label="最近播放" active={activeTab === 'recent'} onClick={() => onTabChange('recent')} />
           </div>
         </div>
 
-        {/* 个人歌单模块 (参考图1风格) */}
+        {/* 个人歌单模块 */}
         <div className="mt-8">
           <div className="px-4 flex items-center justify-between mb-4">
             <div className="flex items-center gap-2 text-sm font-bold text-slate-400">
@@ -169,6 +168,5 @@ const SparklesIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" he
 const MicIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>;
 const HeartIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>;
 const ClockIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
-const DownloadIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>;
 
 export default Sidebar;

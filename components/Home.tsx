@@ -1,14 +1,15 @@
 
 import React from 'react';
 import { MOCK_PLAYLISTS } from '../constants';
-import { Song } from '../types';
+import { Song, Playlist } from '../types';
 
 interface HomeProps {
   onPlaySong: (song?: Partial<Song>) => void;
+  onPlaylistClick: (playlist: Playlist) => void;
   onNavigate: () => void;
 }
 
-const Home: React.FC<HomeProps> = ({ onPlaySong, onNavigate }) => {
+const Home: React.FC<HomeProps> = ({ onPlaySong, onPlaylistClick, onNavigate }) => {
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour >= 5 && hour < 12) return '早安，小菜逼学Java';
@@ -17,12 +18,11 @@ const Home: React.FC<HomeProps> = ({ onPlaySong, onNavigate }) => {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto px-8 pb-32 pt-6">
+    <div className="flex-1 overflow-y-auto px-8 pb-32 pt-6 custom-scrollbar animate-in fade-in duration-500">
       <header className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
           {getGreeting()}
         </h1>
-        {/* “查看你的听歌报告”按钮已删除 */}
       </header>
 
       <section>
@@ -41,16 +41,19 @@ const Home: React.FC<HomeProps> = ({ onPlaySong, onNavigate }) => {
             <div 
               key={playlist.id} 
               className="group cursor-pointer"
-              onClick={() => onPlaySong({ title: `播放列表: ${playlist.title}`, artist: '多位艺人', cover: playlist.cover })}
+              onClick={() => onPlaylistClick(playlist)}
             >
-              <div className="relative aspect-square rounded-2xl overflow-hidden mb-3 shadow-xl shadow-black/20">
+              <div className="relative aspect-square rounded-2xl overflow-hidden mb-3 shadow-xl shadow-black/20 border-2 border-transparent hover:border-emerald-500/50 transition-all">
                 <img 
                   src={playlist.cover} 
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                   alt={playlist.title} 
                 />
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <div className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center scale-75 group-hover:scale-100 transition-all shadow-xl shadow-emerald-500/20">
+                  <div 
+                    onClick={(e) => { e.stopPropagation(); onPlaySong({ title: playlist.title, cover: playlist.cover }); }}
+                    className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center scale-75 group-hover:scale-100 transition-all shadow-xl shadow-emerald-500/20"
+                  >
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                   </div>
                 </div>

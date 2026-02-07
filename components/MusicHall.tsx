@@ -1,14 +1,15 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { MOCK_BANNERS, MOCK_PLAYLISTS, RECOMMENDED_SONGS, MOCK_RANKINGS, MOCK_ARTISTS } from '../constants';
-import { Song } from '../types';
+import { Song, Playlist } from '../types';
 
 interface MusicHallProps {
   onPlaySong: (song?: Partial<Song>) => void;
+  onPlaylistClick: (playlist: Playlist) => void;
   initialCategory?: string;
 }
 
-const MusicHall: React.FC<MusicHallProps> = ({ onPlaySong, initialCategory = '精选' }) => {
+const MusicHall: React.FC<MusicHallProps> = ({ onPlaySong, onPlaylistClick, initialCategory = '精选' }) => {
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [activeBannerIndex, setActiveBannerIndex] = useState(0);
@@ -41,7 +42,8 @@ const MusicHall: React.FC<MusicHallProps> = ({ onPlaySong, initialCategory = '�
       {MOCK_RANKINGS.map((rank) => (
         <div 
           key={rank.id} 
-          className={`group relative aspect-[4/5] rounded-[32px] overflow-hidden bg-gradient-to-br ${rank.color} to-slate-900 border border-white/5 hover:border-white/20 transition-all cursor-pointer shadow-2xl`}
+          onClick={() => onPlaylistClick({ id: rank.id, title: rank.title, cover: rank.cover, playCount: '99w+' })}
+          className={`group relative aspect-[4/5] rounded-[32px] overflow-hidden bg-gradient-to-br ${rank.color} to-slate-900 border border-white/5 hover:border-emerald-500/50 transition-all cursor-pointer shadow-2xl`}
         >
           <img src={rank.cover} className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-110 transition-transform duration-700" alt={rank.title} />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
@@ -50,8 +52,8 @@ const MusicHall: React.FC<MusicHallProps> = ({ onPlaySong, initialCategory = '�
             <p className="text-slate-400 text-sm font-medium">每日更新 · 50首</p>
           </div>
           <div 
-            onClick={() => onPlaySong({ title: rank.title, cover: rank.cover })}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white text-slate-950 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all shadow-2xl shadow-white/20"
+            onClick={(e) => { e.stopPropagation(); onPlaySong({ title: rank.title, cover: rank.cover }); }}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-emerald-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all shadow-2xl shadow-emerald-500/20"
           >
             <svg className="ml-1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
           </div>
@@ -109,8 +111,8 @@ const MusicHall: React.FC<MusicHallProps> = ({ onPlaySong, initialCategory = '�
   );
 
   return (
-    <div className="flex-1 overflow-y-auto px-8 pb-32 scroll-smooth">
-      <h1 className="text-4xl font-bold mb-6 tracking-tight text-white">音乐馆</h1>
+    <div className="flex-1 overflow-y-auto px-8 pb-32 scroll-smooth custom-scrollbar animate-in fade-in duration-500">
+      <h1 className="text-4xl font-bold mb-6 tracking-tight text-white pt-6">音乐馆</h1>
       <div className="flex gap-8 mb-8 border-b border-white/5">
         {tabs.map((tab) => (
           <button key={tab} onClick={() => setActiveCategory(tab)} className={`pb-4 text-base font-semibold transition-all relative ${activeCategory === tab ? 'text-emerald-400' : 'text-slate-400 hover:text-white'}`}>
@@ -122,9 +124,9 @@ const MusicHall: React.FC<MusicHallProps> = ({ onPlaySong, initialCategory = '�
       {activeCategory === '精选' && (
         <div className="animate-in fade-in duration-700">
           <div className="relative group/banners mb-12">
-            <div ref={bannerScrollRef} className="flex overflow-x-hidden rounded-3xl snap-x snap-mandatory shadow-2xl shadow-black/40">
+            <div ref={bannerScrollRef} className="flex overflow-x-hidden rounded-[40px] snap-x snap-mandatory shadow-2xl shadow-black/40 border border-white/5">
               {MOCK_BANNERS.map((banner, idx) => (
-                <div key={banner.id} className="relative flex-shrink-0 w-full snap-start aspect-[21/7] overflow-hidden group/item">
+                <div key={banner.id} className="relative flex-shrink-0 w-full snap-start aspect-[21/8] overflow-hidden group/item">
                   <img src={banner.image} className={`absolute inset-0 w-full h-full object-cover transition-transform duration-[10000ms] ${activeBannerIndex === idx ? 'scale-110' : 'scale-100'}`} alt={banner.title} />
                   <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/30 to-transparent" />
                   <div className="absolute inset-0 p-16 flex flex-col justify-center select-none pointer-events-none">
@@ -136,7 +138,7 @@ const MusicHall: React.FC<MusicHallProps> = ({ onPlaySong, initialCategory = '�
             </div>
           </div>
           <div className="mb-12">
-            <h2 className="text-2xl font-black flex items-center gap-3 mb-6">猜你喜欢 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /></h2>
+            <h2 className="text-2xl font-black flex items-center gap-3 mb-6 px-2">猜你喜欢 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /></h2>
             {renderSongList(RECOMMENDED_SONGS)}
           </div>
         </div>
@@ -148,14 +150,14 @@ const MusicHall: React.FC<MusicHallProps> = ({ onPlaySong, initialCategory = '�
       {activeCategory === '分类歌单' && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8">
           {MOCK_PLAYLISTS.map((pl) => (
-            <div key={pl.id} className="group cursor-pointer">
-              <div className="relative aspect-square rounded-2xl overflow-hidden mb-3 border-2 border-transparent hover:border-white/50 transition-all">
-                <img src={pl.cover} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={pl.title} />
+            <div key={pl.id} className="group cursor-pointer" onClick={() => onPlaylistClick(pl)}>
+              <div className="relative aspect-square rounded-[32px] overflow-hidden mb-3 border-2 border-transparent hover:border-emerald-500/50 transition-all shadow-xl">
+                <img src={pl.cover} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={pl.title} />
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <div onClick={(e) => { e.stopPropagation(); onPlaySong({ title: pl.title, cover: pl.cover }); }} className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
                 </div>
               </div>
-              <h4 className="text-sm font-medium line-clamp-2 group-hover:text-emerald-400 transition-colors">{pl.title}</h4>
+              <h4 className="text-sm font-bold line-clamp-2 px-1 group-hover:text-emerald-400 transition-colors leading-tight">{pl.title}</h4>
             </div>
           ))}
         </div>

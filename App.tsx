@@ -11,14 +11,17 @@ import PlaylistQueue from './components/PlaylistQueue';
 import NowPlayingView from './components/NowPlayingView';
 import AIInspiration from './components/AIInspiration';
 import CreativeCenter from './components/CreativeCenter';
+import PlaylistDetailView from './components/PlaylistDetailView';
+import LibraryView from './components/LibraryView';
 import { CURRENT_SONG } from './constants';
-import { Song } from './types';
+import { Song, Playlist } from './types';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('home');
   const [hallTab, setHallTab] = useState('精选');
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [currentSong, setCurrentSong] = useState<Song>(CURRENT_SONG);
+  const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null);
   const [isQueueOpen, setIsQueueOpen] = useState(false);
   const [isNowPlayingOpen, setIsNowPlayingOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -65,30 +68,49 @@ const App: React.FC = () => {
     }
   };
 
+  const handlePlaylistClick = (playlist: Playlist) => {
+    setSelectedPlaylist(playlist);
+  };
+
   const handleSeek = (time: number) => {
     setCurrentTime(time);
   };
 
   const handleNavigateToHall = (category?: string) => {
     setActiveTab('hall');
+    setSelectedPlaylist(null);
     if (category) setHallTab(category);
   };
 
   const handleSidebarTabChange = (tab: string) => {
     setActiveTab(tab);
+    setSelectedPlaylist(null);
     if (tab === 'hall') setHallTab('精选');
   };
 
   const renderContent = () => {
     if (activeTab === 'auth') return <AuthView onLoginSuccess={handleLoginSuccess} />;
+    
+    // 如果选中了具体歌单，优先显示歌单详情
+    if (selectedPlaylist) {
+      return (
+        <PlaylistDetailView 
+          playlist={selectedPlaylist} 
+          onBack={() => setSelectedPlaylist(null)}
+          onPlaySong={handlePlaySong}
+        />
+      );
+    }
 
     switch (activeTab) {
-      case 'home': return <Home onPlaySong={handlePlaySong} onNavigate={() => handleNavigateToHall('分类歌单')} />;
-      case 'hall': return <MusicHall onPlaySong={handlePlaySong} initialCategory={hallTab} />;
+      case 'home': return <Home onPlaySong={handlePlaySong} onPlaylistClick={handlePlaylistClick} onNavigate={() => handleNavigateToHall('分类歌单')} />;
+      case 'hall': return <MusicHall onPlaySong={handlePlaySong} onPlaylistClick={handlePlaylistClick} initialCategory={hallTab} />;
       case 'ai': return <AIInspiration onPlaySong={handlePlaySong} />;
       case 'creative': return <CreativeCenter onPlaySong={handlePlaySong} />;
+      case 'favorites': return <LibraryView type="favorites" onPlaySong={handlePlaySong} />;
+      case 'recent': return <LibraryView type="recent" onPlaySong={handlePlaySong} />;
       case 'profile': return isLoggedIn ? <Profile /> : <AuthView onLoginSuccess={handleLoginSuccess} />;
-      default: return <Home onPlaySong={handlePlaySong} onNavigate={() => handleNavigateToHall('分类歌单')} />;
+      default: return <Home onPlaySong={handlePlaySong} onPlaylistClick={handlePlaylistClick} onNavigate={() => handleNavigateToHall('分类歌单')} />;
     }
   };
 
