@@ -6,6 +6,15 @@ export interface ExtendedSong extends Song {
   isSq?: boolean;
   isHiRes?: boolean;
   hasVideo?: boolean;
+  playCount?: string;
+  status?: 'published' | 'reviewing' | 'draft';
+}
+
+export interface Artist {
+  id: string;
+  name: string;
+  avatar: string;
+  fans: string;
 }
 
 const MOCK_LYRICS: LyricLine[] = [
@@ -16,13 +25,6 @@ const MOCK_LYRICS: LyricLine[] = [
   { time: 12, text: "走过平湖 走过风雨" },
   { time: 16, text: "我回头望去" },
   { time: 20, text: "还是那一抹绿" },
-  { time: 24, text: "嘉禾望岗的云" },
-  { time: 28, text: "吹散了往昔的愁绪" },
-  { time: 32, text: "如果你能听见" },
-  { time: 36, text: "我依然在这里等你" },
-  { time: 40, text: "哪怕岁月 模糊了你的背影" },
-  { time: 45, text: "弦乐录音：辉音国际爱乐乐团" },
-  { time: 50, text: "混音/母带：梁冬盛" },
 ];
 
 export const RECOMMENDED_SONGS: ExtendedSong[] = [
@@ -32,39 +34,44 @@ export const RECOMMENDED_SONGS: ExtendedSong[] = [
   { id: '17', title: '唯一', artist: 'G.E.M. 邓紫棋', album: 'T.I.M.E.', duration: '04:13', cover: 'https://picsum.photos/seed/s17/100/100', isVip: true, isHiRes: true, hasVideo: true, lyrics: MOCK_LYRICS },
   { id: '18', title: '雨爱', artist: '杨丞琳', album: '雨爱', duration: '04:20', cover: 'https://picsum.photos/seed/s18/100/100', isVip: true, isHiRes: true, hasVideo: true, lyrics: MOCK_LYRICS },
   { id: '19', title: '野马尘埃 Floating Mist', artist: '阿兰', album: '霄灯映明月', duration: '02:53', cover: 'https://picsum.photos/seed/s19/100/100', isSq: true, lyrics: MOCK_LYRICS },
-  { id: '20', title: 'Dear D', artist: '项睿娴', album: 'Dear D', duration: '03:16', cover: 'https://picsum.photos/seed/s20/100/100', isVip: true, isHiRes: true, lyrics: MOCK_LYRICS },
-  { id: '21', title: '爱错', artist: '王力宏', album: '心中的日月', duration: '03:58', cover: 'https://picsum.photos/seed/s21/100/100', isVip: true, isHiRes: true, hasVideo: true, lyrics: MOCK_LYRICS },
+];
+
+export const USER_CREATIONS: ExtendedSong[] = [
+  { id: 'u1', title: '永恒的夏日', artist: '陈子墨 (Alex)', album: 'Demo #1', duration: '04:12', cover: 'https://picsum.photos/seed/u1/400/400', playCount: '1.2w', status: 'published' },
+  { id: 'u2', title: '二进制忧郁', artist: '陈子墨 (Alex)', album: 'Code & Soul', duration: '03:45', cover: 'https://picsum.photos/seed/u2/400/400', playCount: '8.5k', status: 'published' },
+  { id: 'u3', title: '凌晨三点的咖啡', artist: '陈子墨 (Alex)', album: '深夜食堂', duration: '05:20', cover: 'https://picsum.photos/seed/u3/400/400', playCount: '0', status: 'reviewing' },
+];
+
+export const MOCK_RANKINGS = [
+  { id: 'r1', title: '飙升榜', cover: 'https://picsum.photos/seed/r1/400/400', color: 'from-orange-500/20' },
+  { id: 'r2', title: '热歌榜', cover: 'https://picsum.photos/seed/r2/400/400', color: 'from-red-500/20' },
+  { id: 'r3', title: '新歌榜', cover: 'https://picsum.photos/seed/r3/400/400', color: 'from-emerald-500/20' },
+  { id: 'r4', title: '流行指数', cover: 'https://picsum.photos/seed/r4/400/400', color: 'from-blue-500/20' },
+];
+
+export const MOCK_ARTISTS: Artist[] = [
+  { id: 'a1', name: '周杰伦', avatar: 'https://picsum.photos/seed/a1/300/300', fans: '3.2亿' },
+  { id: 'a2', name: '陈奕迅', avatar: 'https://picsum.photos/seed/a2/300/300', fans: '1.5亿' },
+  { id: 'a3', name: '邓紫棋', avatar: 'https://picsum.photos/seed/a3/300/300', fans: '9800万' },
+  { id: 'a4', name: '毛不易', avatar: 'https://picsum.photos/seed/a4/300/300', fans: '5600万' },
+  { id: 'a5', name: '薛之谦', avatar: 'https://picsum.photos/seed/a5/300/300', fans: '8900万' },
+  { id: 'a6', name: '李荣浩', avatar: 'https://picsum.photos/seed/a6/300/300', fans: '4200万' },
+];
+
+export const MOCK_MY_PLAYLISTS: Playlist[] = [
+  { id: 'mp1', title: 'travel', cover: 'https://picsum.photos/seed/mp1/200/200', playCount: '12' },
+  { id: 'mp2', title: 'coding vibe', cover: 'https://picsum.photos/seed/mp2/200/200', playCount: '156' },
+  { id: 'mp3', title: '深夜EMO', cover: 'https://picsum.photos/seed/mp3/200/200', playCount: '89' },
 ];
 
 export interface ExtendedBannerItem extends BannerItem {
-  songId?: string; // 关联的歌曲ID
+  songId?: string;
 }
 
 export const MOCK_BANNERS: ExtendedBannerItem[] = [
-  {
-    id: 'b1',
-    image: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=1200',
-    title: '霓虹美梦',
-    subtitle: '属于深夜的赛博朋克节奏',
-    type: '数字专辑',
-    songId: '14' // 关联歌曲库中的 ID
-  },
-  {
-    id: 'b2',
-    image: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&q=80&w=1200',
-    title: '夏日流动',
-    subtitle: '清凉屋顶派对必备 House',
-    type: '独家内容',
-    songId: '16'
-  },
-  {
-    id: 'b3',
-    image: 'https://images.unsplash.com/photo-1459749411177-042180ce673c?auto=format&fit=crop&q=80&w=1200',
-    title: '原声灵魂',
-    subtitle: '触动内心的纯净旋律',
-    type: '新歌首发',
-    songId: '17'
-  }
+  { id: 'b1', image: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=1200', title: '霓虹美梦', subtitle: '属于深夜的赛博朋克节奏', type: '数字专辑', songId: '14' },
+  { id: 'b2', image: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&q=80&w=1200', title: '夏日流动', subtitle: '清凉屋顶派对必备 House', type: '独家内容', songId: '16' },
+  { id: 'b3', image: 'https://images.unsplash.com/photo-1459749411177-042180ce673c?auto=format&fit=crop&q=80&w=1200', title: '原声灵魂', subtitle: '触动内心的纯净旋律', type: '新歌首发', songId: '17' }
 ];
 
 export const MOCK_PLAYLISTS: Playlist[] = [

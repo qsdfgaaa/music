@@ -10,6 +10,7 @@ import AuthView from './components/AuthView';
 import PlaylistQueue from './components/PlaylistQueue';
 import NowPlayingView from './components/NowPlayingView';
 import AIInspiration from './components/AIInspiration';
+import CreativeCenter from './components/CreativeCenter';
 import { CURRENT_SONG } from './constants';
 import { Song } from './types';
 
@@ -23,7 +24,6 @@ const App: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
 
-  // 模拟播放计时器
   useEffect(() => {
     let interval: any;
     if (isPlaying) {
@@ -43,11 +43,8 @@ const App: React.FC = () => {
   }, [isPlaying, currentSong.duration]);
 
   const handleProfileClick = () => {
-    if (isLoggedIn) {
-      setActiveTab('profile');
-    } else {
-      setActiveTab('auth');
-    }
+    if (isLoggedIn) setActiveTab('profile');
+    else setActiveTab('auth');
   };
 
   const handleLogout = () => {
@@ -62,7 +59,6 @@ const App: React.FC = () => {
 
   const handlePlaySong = (song?: Partial<Song>) => {
     if (song) {
-      // 这里的逻辑可以优化为从 RECOMMENDED_SONGS 中查找更完整的数据
       setCurrentSong({ ...currentSong, ...song } as Song);
       setIsPlaying(true);
       setCurrentTime(0);
@@ -75,34 +71,24 @@ const App: React.FC = () => {
 
   const handleNavigateToHall = (category?: string) => {
     setActiveTab('hall');
-    if (category) {
-      setHallTab(category);
-    }
+    if (category) setHallTab(category);
   };
 
   const handleSidebarTabChange = (tab: string) => {
     setActiveTab(tab);
-    if (tab === 'hall') {
-      setHallTab('精选');
-    }
+    if (tab === 'hall') setHallTab('精选');
   };
 
   const renderContent = () => {
-    if (activeTab === 'auth') {
-      return <AuthView onLoginSuccess={handleLoginSuccess} />;
-    }
+    if (activeTab === 'auth') return <AuthView onLoginSuccess={handleLoginSuccess} />;
 
     switch (activeTab) {
-      case 'home':
-        return <Home onPlaySong={handlePlaySong} onNavigate={() => handleNavigateToHall('分类歌单')} />;
-      case 'hall':
-        return <MusicHall onPlaySong={handlePlaySong} initialCategory={hallTab} />;
-      case 'ai':
-        return <AIInspiration onPlaySong={handlePlaySong} />;
-      case 'profile':
-        return isLoggedIn ? <Profile /> : <AuthView onLoginSuccess={handleLoginSuccess} />;
-      default:
-        return <Home onPlaySong={handlePlaySong} onNavigate={() => handleNavigateToHall('分类歌单')} />;
+      case 'home': return <Home onPlaySong={handlePlaySong} onNavigate={() => handleNavigateToHall('分类歌单')} />;
+      case 'hall': return <MusicHall onPlaySong={handlePlaySong} initialCategory={hallTab} />;
+      case 'ai': return <AIInspiration onPlaySong={handlePlaySong} />;
+      case 'creative': return <CreativeCenter onPlaySong={handlePlaySong} />;
+      case 'profile': return isLoggedIn ? <Profile /> : <AuthView onLoginSuccess={handleLoginSuccess} />;
+      default: return <Home onPlaySong={handlePlaySong} onNavigate={() => handleNavigateToHall('分类歌单')} />;
     }
   };
 
@@ -118,49 +104,17 @@ const App: React.FC = () => {
             onLogoutClick={handleLogout}
           />
         )}
-        
         <main className={`flex-1 flex flex-col min-w-0 transition-colors duration-500 ${activeTab === 'auth' ? 'bg-slate-900' : 'bg-slate-950'}`}>
           {activeTab !== 'auth' && <TopBar />}
           {renderContent()}
         </main>
       </div>
-
-      {isQueueOpen && (
-        <div 
-          className="fixed inset-0 z-[54] bg-transparent" 
-          onClick={() => setIsQueueOpen(false)}
-        />
-      )}
-
+      {isQueueOpen && <div className="fixed inset-0 z-[54] bg-transparent" onClick={() => setIsQueueOpen(false)} />}
       {activeTab !== 'auth' && (
         <>
-          <PlayerBar 
-            currentSong={currentSong} 
-            isPlaying={isPlaying}
-            currentTime={currentTime}
-            onTogglePlay={() => setIsPlaying(!isPlaying)}
-            onToggleQueue={() => setIsQueueOpen(!isQueueOpen)} 
-            onOpenNowPlaying={() => setIsNowPlayingOpen(true)}
-            isQueueOpen={isQueueOpen}
-            isLoggedIn={isLoggedIn}
-            onProfileClick={handleProfileClick}
-            onSeek={handleSeek}
-          />
-          <PlaylistQueue 
-            isOpen={isQueueOpen} 
-            onClose={() => setIsQueueOpen(false)} 
-            currentSongId={currentSong.id}
-            onPlaySong={handlePlaySong}
-          />
-          <NowPlayingView 
-            isOpen={isNowPlayingOpen} 
-            onClose={() => setIsNowPlayingOpen(false)} 
-            currentSong={currentSong} 
-            isPlaying={isPlaying}
-            currentTime={currentTime}
-            onTogglePlay={() => setIsPlaying(!isPlaying)}
-            onSeek={handleSeek}
-          />
+          <PlayerBar currentSong={currentSong} isPlaying={isPlaying} currentTime={currentTime} onTogglePlay={() => setIsPlaying(!isPlaying)} onToggleQueue={() => setIsQueueOpen(!isQueueOpen)} onOpenNowPlaying={() => setIsNowPlayingOpen(true)} isQueueOpen={isQueueOpen} isLoggedIn={isLoggedIn} onProfileClick={handleProfileClick} onSeek={handleSeek} />
+          <PlaylistQueue isOpen={isQueueOpen} onClose={() => setIsQueueOpen(false)} currentSongId={currentSong.id} onPlaySong={handlePlaySong} />
+          <NowPlayingView isOpen={isNowPlayingOpen} onClose={() => setIsNowPlayingOpen(false)} currentSong={currentSong} isPlaying={isPlaying} currentTime={currentTime} onTogglePlay={() => setIsPlaying(!isPlaying)} onSeek={handleSeek} />
         </>
       )}
     </div>

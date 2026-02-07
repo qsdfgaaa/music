@@ -21,6 +21,7 @@ const AIInspiration: React.FC<AIInspirationProps> = ({ onPlaySong }) => {
   const [prompt, setPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [recommendations, setRecommendations] = useState<AIRecommendation[]>([]);
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
   const generateInspiration = async (inputPrompt: string) => {
     if (!inputPrompt.trim()) return;
@@ -56,7 +57,6 @@ const AIInspiration: React.FC<AIInspirationProps> = ({ onPlaySong }) => {
       setRecommendations(result);
     } catch (error) {
       console.error("AI Generation Error:", error);
-      // 可以在这里添加错误提示逻辑
     } finally {
       setIsLoading(false);
     }
@@ -73,7 +73,7 @@ const AIInspiration: React.FC<AIInspirationProps> = ({ onPlaySong }) => {
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/5 blur-[150px] -z-10 animate-pulse" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/5 blur-[120px] -z-10" />
 
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <header className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-black uppercase tracking-widest mb-6 animate-bounce">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
@@ -84,7 +84,7 @@ const AIInspiration: React.FC<AIInspirationProps> = ({ onPlaySong }) => {
         </header>
 
         {/* 输入区域 */}
-        <div className="relative mb-12 group">
+        <div className="relative mb-8 group max-w-3xl mx-auto">
           <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-[32px] blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
           <div className="relative flex items-center bg-slate-900/40 border border-white/10 rounded-[28px] p-2 backdrop-blur-xl">
             <input 
@@ -92,8 +92,8 @@ const AIInspiration: React.FC<AIInspirationProps> = ({ onPlaySong }) => {
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && generateInspiration(prompt)}
-              placeholder="在此输入你的心境描述..." 
-              className="flex-1 bg-transparent border-none outline-none py-4 px-6 text-lg placeholder:text-slate-600 font-medium"
+              placeholder="在此输入你的心境描述，例如：凌晨三点在雨夜开车..." 
+              className="flex-1 bg-transparent border-none outline-none py-4 px-6 text-lg placeholder:text-slate-600 font-medium text-white"
             />
             <button 
               onClick={() => generateInspiration(prompt)}
@@ -105,13 +105,13 @@ const AIInspiration: React.FC<AIInspirationProps> = ({ onPlaySong }) => {
               ) : (
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
               )}
-              生成推荐
+              生成
             </button>
           </div>
         </div>
 
         {/* 快捷标签 */}
-        <div className="flex flex-wrap justify-center gap-3 mb-20">
+        <div className="flex flex-wrap justify-center gap-3 mb-16">
           {PRESET_TAGS.map(tag => (
             <button 
               key={tag}
@@ -123,39 +123,100 @@ const AIInspiration: React.FC<AIInspirationProps> = ({ onPlaySong }) => {
           ))}
         </div>
 
-        {/* 结果展示 */}
-        <div className="grid gap-4">
-          {recommendations.map((rec, idx) => (
-            <div 
-              key={idx}
-              className="group relative bg-white/[0.03] border border-white/5 rounded-3xl p-6 flex items-center gap-6 hover:bg-white/[0.06] hover:border-white/10 transition-all animate-in fade-in slide-in-from-bottom-4 duration-500"
-              style={{ animationDelay: `${idx * 100}ms` }}
-            >
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform">
-                <svg className="text-emerald-500" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        {/* 歌曲列表重构 - 采用与音乐馆一致的五栏网格布局 */}
+        <div className="animate-in fade-in duration-700">
+          {recommendations.length > 0 && (
+            <>
+              {/* Table Header - 同步样式 */}
+              <div className="grid grid-cols-[60px_1fr_200px_350px_100px] px-6 py-4 text-[10px] font-black text-slate-600 uppercase tracking-[0.25em] mb-2 border-b border-white/5 bg-white/[0.01] rounded-t-xl">
+                <span>序号</span>
+                <span>歌曲标题</span>
+                <span>艺人</span>
+                <span>AI 推荐理由</span>
+                <span className="text-right pr-4">来源</span>
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-3 mb-1">
-                  <h3 className="text-xl font-black text-white truncate">{rec.title}</h3>
-                  <span className="w-1.5 h-1.5 rounded-full bg-slate-700" />
-                  <span className="text-sm font-bold text-emerald-400">{rec.artist}</span>
-                </div>
-                <p className="text-sm text-slate-500 font-medium leading-relaxed italic">“{rec.reason}”</p>
-              </div>
-              <button 
-                onClick={() => onPlaySong({ title: rec.title, artist: rec.artist, cover: `https://picsum.photos/seed/${rec.title}/300/300` })}
-                className="w-12 h-12 rounded-full bg-white text-slate-950 flex items-center justify-center shadow-xl opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all hover:scale-110 active:scale-95"
-              >
-                <svg className="ml-0.5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              </button>
-            </div>
-          ))}
 
-          {/* 空状态建议 */}
+              {/* Result List */}
+              <div className="space-y-1">
+                {recommendations.map((rec, idx) => {
+                  const songId = (idx + 1).toString().padStart(2, '0');
+                  const coverUrl = `https://picsum.photos/seed/${rec.title}/400/400`;
+                  
+                  return (
+                    <div 
+                      key={idx}
+                      onMouseEnter={() => setHoveredIdx(idx)}
+                      onMouseLeave={() => setHoveredIdx(null)}
+                      className={`grid grid-cols-[60px_1fr_200px_350px_100px] items-center px-6 py-3 rounded-xl transition-all group border border-transparent ${hoveredIdx === idx ? 'bg-white/5 border-white/10 shadow-lg shadow-black/20' : 'hover:bg-white/[0.02]'}`}
+                      style={{ animationDelay: `${idx * 100}ms` }}
+                    >
+                      {/* Column 1: Index */}
+                      <div className="flex items-center gap-3 text-slate-500 group-hover:text-emerald-400 transition-colors">
+                        <span className="text-xs font-mono font-bold w-6">{songId}</span>
+                      </div>
+
+                      {/* Column 2: Song Title & Cover */}
+                      <div className="flex items-center gap-4 min-w-0">
+                        <div 
+                          className="relative w-11 h-11 flex-shrink-0 group/cover cursor-pointer rounded-lg overflow-hidden border-2 border-transparent hover:border-white/50 transition-all duration-300"
+                          onClick={() => onPlaySong({ title: rec.title, artist: rec.artist, cover: coverUrl })}
+                        >
+                          <img src={coverUrl} className="w-full h-full object-cover transition-transform group-hover/cover:scale-110" alt={rec.title} />
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/cover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white" className="drop-shadow-lg"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          <span className="text-base font-bold truncate text-slate-200 group-hover:text-white transition-colors tracking-tight">{rec.title}</span>
+                          <span className="text-[8px] font-black border border-emerald-500/40 text-emerald-400 px-1.5 rounded-sm leading-none py-0.5 bg-emerald-500/5 uppercase tracking-tighter flex-shrink-0">AI Recommended</span>
+                        </div>
+
+                        {/* Hover Icons */}
+                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all pr-4 duration-300 translate-x-2 group-hover:translate-x-0">
+                          <button className="p-2 rounded-full hover:bg-emerald-500/20 text-slate-400 hover:text-emerald-400 transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                          </button>
+                          <button className="p-2 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Column 3: Artist */}
+                      <div className="text-sm font-medium text-slate-400 truncate pr-4 group-hover:text-slate-200 transition-colors">
+                        {rec.artist}
+                      </div>
+
+                      {/* Column 4: Reason (Replcaing Album) */}
+                      <div className="text-sm font-medium text-slate-500 truncate pr-4 group-hover:text-slate-300 italic transition-colors">
+                        “{rec.reason}”
+                      </div>
+
+                      {/* Column 5: Meta/Duration placeholder */}
+                      <div className="text-[10px] font-black text-slate-600 text-right pr-4 uppercase tracking-widest group-hover:text-emerald-500 transition-colors">
+                        AI Gen
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex flex-col items-center justify-center py-20 animate-in fade-in">
+              <div className="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mb-4" />
+              <p className="text-sm font-black text-slate-500 uppercase tracking-[0.3em]">AI 正在深度检索与匹配...</p>
+            </div>
+          )}
+
+          {/* Empty State */}
           {!isLoading && recommendations.length === 0 && (
-            <div className="text-center py-20 opacity-30 select-none">
-              <svg className="mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-              <p className="text-sm font-black uppercase tracking-[0.3em]">等待灵感的迸发...</p>
+            <div className="text-center py-24 opacity-20 select-none border-2 border-dashed border-white/5 rounded-[40px]">
+              <svg className="mx-auto mb-6" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              <p className="text-lg font-black uppercase tracking-[0.4em]">等待您的音乐灵感</p>
             </div>
           )}
         </div>
