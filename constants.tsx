@@ -1,5 +1,5 @@
 
-import { Song, Playlist, BannerItem, LyricLine } from './types';
+import { Song, Playlist, BannerItem, LyricLine, Comment } from './types';
 
 export interface ExtendedSong extends Song {
   isVip?: boolean;
@@ -8,6 +8,11 @@ export interface ExtendedSong extends Song {
   hasVideo?: boolean;
   playCount?: string;
   status?: 'published' | 'reviewing' | 'draft';
+}
+
+// Added missing ExtendedBannerItem interface
+export interface ExtendedBannerItem extends BannerItem {
+  songId?: string;
 }
 
 export interface Artist {
@@ -35,6 +40,45 @@ export const RECOMMENDED_SONGS: ExtendedSong[] = [
   { id: '18', title: '雨爱', artist: '杨丞琳', album: '雨爱', duration: '04:20', cover: 'https://picsum.photos/seed/s18/100/100', isVip: true, isHiRes: true, hasVideo: true, lyrics: MOCK_LYRICS },
   { id: '19', title: '野马尘埃 Floating Mist', artist: '阿兰', album: '霄灯映明月', duration: '02:53', cover: 'https://picsum.photos/seed/s19/100/100', isSq: true, lyrics: MOCK_LYRICS },
 ];
+
+export const MOCK_COMMENTS: Comment[] = [
+  {
+    id: 'c1',
+    user: { id: 'u101', name: '星见嘉兰', avatar: 'https://picsum.photos/seed/c1/64/64', vipLevel: 4 },
+    content: '添为社稷神，自当死社稷',
+    time: '2月6日 00:03',
+    location: '来自河南',
+    likes: 1451,
+    replies: [
+      {
+        id: 'c1r1',
+        user: { id: 'u102', name: '憧憬', avatar: 'https://picsum.photos/seed/c2/64/64' },
+        content: '添为社稷神，自当死社稷',
+        time: '2月6日 10:15',
+        location: '来自江苏',
+        likes: 64
+      }
+    ]
+  },
+  {
+    id: 'c2',
+    user: { id: 'u103', name: '阳间车厘子', avatar: 'https://picsum.photos/seed/c3/64/64', vipLevel: 6 },
+    content: '这首歌的旋律真的太治愈了，循环了整个下午。',
+    time: '2月7日 14:20',
+    location: '来自四川',
+    likes: 892
+  }
+];
+
+export const CURRENT_SONG: Song = {
+  id: 's1',
+  title: '嘉禾望岗',
+  artist: '海来阿木',
+  album: '嘉禾望岗',
+  cover: 'https://picsum.photos/seed/cover/400/400',
+  duration: '04:03',
+  lyrics: MOCK_LYRICS
+};
 
 export const USER_CREATIONS: ExtendedSong[] = [
   { id: 'u1', title: '永恒的夏日', artist: '陈子墨 (Alex)', album: 'Demo #1', duration: '04:12', cover: 'https://picsum.photos/seed/u1/400/400', playCount: '1.2w', status: 'published' },
@@ -64,9 +108,11 @@ export const MOCK_MY_PLAYLISTS: Playlist[] = [
   { id: 'mp3', title: '深夜EMO', cover: 'https://picsum.photos/seed/mp3/200/200', playCount: '89' },
 ];
 
-export interface ExtendedBannerItem extends BannerItem {
-  songId?: string;
-}
+export const MOCK_COLLECTED_PLAYLISTS: Playlist[] = [
+  { id: 'cp1', title: '华语流行经典', cover: 'https://picsum.photos/seed/cp1/200/200', playCount: '2.3k' },
+  { id: 'cp2', title: '80s Rock Anthems', cover: 'https://picsum.photos/seed/cp2/200/200', playCount: '890' },
+  { id: 'cp3', title: 'Lofi Girl - Study', cover: 'https://picsum.photos/seed/cp3/200/200', playCount: '1.2m' },
+];
 
 export const MOCK_BANNERS: ExtendedBannerItem[] = [
   { id: 'b1', image: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=1200', title: '霓虹美梦', subtitle: '属于深夜的赛博朋克节奏', type: '数字专辑', songId: '14' },
@@ -82,13 +128,3 @@ export const MOCK_PLAYLISTS: Playlist[] = [
   { id: 'p5', title: '慵懒午后时光', cover: 'https://picsum.photos/seed/p5/300/300', playCount: '2.3亿', description: "一杯咖啡，一本书，和一段恰到好处的背景音乐。" },
   { id: 'p6', title: '沉浸式代码模式', cover: 'https://picsum.photos/seed/p6/300/300', playCount: '9.3亿', description: "专为程序员打造，滤掉喧嚣，只剩逻辑与旋律。" },
 ];
-
-export const CURRENT_SONG: Song = {
-  id: 's1',
-  title: '嘉禾望岗',
-  artist: '海来阿木',
-  album: '嘉禾望岗',
-  cover: 'https://picsum.photos/seed/cover/400/400',
-  duration: '04:03',
-  lyrics: MOCK_LYRICS
-};

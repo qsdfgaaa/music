@@ -13,8 +13,11 @@ import AIInspiration from './components/AIInspiration';
 import CreativeCenter from './components/CreativeCenter';
 import PlaylistDetailView from './components/PlaylistDetailView';
 import LibraryView from './components/LibraryView';
+import CommentView from './components/CommentView';
+import ArtistDetailView from './components/ArtistDetailView';
 import { CURRENT_SONG } from './constants';
 import { Song, Playlist } from './types';
+import { Artist } from './constants';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('home');
@@ -22,8 +25,10 @@ const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [currentSong, setCurrentSong] = useState<Song>(CURRENT_SONG);
   const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null);
+  const [selectedArtist, setSelectedArtist] = useState<Artist | null>(null);
   const [isQueueOpen, setIsQueueOpen] = useState(false);
   const [isNowPlayingOpen, setIsNowPlayingOpen] = useState(false);
+  const [isCommentViewActive, setIsCommentViewActive] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
 
@@ -46,8 +51,16 @@ const App: React.FC = () => {
   }, [isPlaying, currentSong.duration]);
 
   const handleProfileClick = () => {
-    if (isLoggedIn) setActiveTab('profile');
-    else setActiveTab('auth');
+    // 修复：进入个人中心前必须清除所有详情页状态
+    setSelectedPlaylist(null);
+    setSelectedArtist(null);
+    setIsCommentViewActive(false);
+    
+    if (isLoggedIn) {
+      setActiveTab('profile');
+    } else {
+      setActiveTab('auth');
+    }
   };
 
   const handleLogout = () => {
@@ -70,28 +83,66 @@ const App: React.FC = () => {
 
   const handlePlaylistClick = (playlist: Playlist) => {
     setSelectedPlaylist(playlist);
+    setSelectedArtist(null);
+    setIsCommentViewActive(false);
+  };
+
+  const handleArtistClick = (artist: Artist) => {
+    setSelectedArtist(artist);
+    setSelectedPlaylist(null);
+    setIsCommentViewActive(false);
   };
 
   const handleSeek = (time: number) => {
     setCurrentTime(time);
   };
 
+  const handleOpenComments = () => {
+    setIsCommentViewActive(true);
+    setIsNowPlayingOpen(false);
+    setSelectedPlaylist(null);
+    setSelectedArtist(null);
+  };
+
   const handleNavigateToHall = (category?: string) => {
     setActiveTab('hall');
     setSelectedPlaylist(null);
+    setSelectedArtist(null);
+    setIsCommentViewActive(false);
     if (category) setHallTab(category);
   };
 
   const handleSidebarTabChange = (tab: string) => {
     setActiveTab(tab);
     setSelectedPlaylist(null);
+    setSelectedArtist(null);
+    setIsCommentViewActive(false);
     if (tab === 'hall') setHallTab('精选');
   };
 
   const renderContent = () => {
     if (activeTab === 'auth') return <AuthView onLoginSuccess={handleLoginSuccess} />;
     
-    // 如果选中了具体歌单，优先显示歌单详情
+    // 详情页优先级
+    if (isCommentViewActive) {
+      return (
+        <CommentView 
+          song={currentSong} 
+          onBack={() => setIsCommentViewActive(false)} 
+        />
+      );
+    }
+
+    if (selectedArtist) {
+      return (
+        <ArtistDetailView 
+          artist={selectedArtist} 
+          onBack={() => setSelectedArtist(null)}
+          onPlaySong={handlePlaySong}
+        />
+      );
+    }
+
     if (selectedPlaylist) {
       return (
         <PlaylistDetailView 
@@ -102,14 +153,15 @@ const App: React.FC = () => {
       );
     }
 
+    // 基础标签页
     switch (activeTab) {
       case 'home': return <Home onPlaySong={handlePlaySong} onPlaylistClick={handlePlaylistClick} onNavigate={() => handleNavigateToHall('分类歌单')} />;
-      case 'hall': return <MusicHall onPlaySong={handlePlaySong} onPlaylistClick={handlePlaylistClick} initialCategory={hallTab} />;
+      case 'hall': return <MusicHall onPlaySong={handlePlaySong} onPlaylistClick={handlePlaylistClick} onArtistClick={handleArtistClick} initialCategory={hallTab} />;
       case 'ai': return <AIInspiration onPlaySong={handlePlaySong} />;
       case 'creative': return <CreativeCenter onPlaySong={handlePlaySong} />;
       case 'favorites': return <LibraryView type="favorites" onPlaySong={handlePlaySong} />;
       case 'recent': return <LibraryView type="recent" onPlaySong={handlePlaySong} />;
-      case 'profile': return isLoggedIn ? <Profile /> : <AuthView onLoginSuccess={handleLoginSuccess} />;
+      case 'profile': return isLoggedIn ? <Profile onPlaylistClick={handlePlaylistClick} onPlaySong={handlePlaySong} /> : <AuthView onLoginSuccess={handleLoginSuccess} />;
       default: return <Home onPlaySong={handlePlaySong} onPlaylistClick={handlePlaylistClick} onNavigate={() => handleNavigateToHall('分类歌单')} />;
     }
   };
@@ -136,9 +188,30 @@ const App: React.FC = () => {
       {isQueueOpen && <div className="fixed inset-0 z-[54] bg-transparent" onClick={() => setIsQueueOpen(false)} />}
       {activeTab !== 'auth' && (
         <>
-          <PlayerBar currentSong={currentSong} isPlaying={isPlaying} currentTime={currentTime} onTogglePlay={() => setIsPlaying(!isPlaying)} onToggleQueue={() => setIsQueueOpen(!isQueueOpen)} onOpenNowPlaying={() => setIsNowPlayingOpen(true)} isQueueOpen={isQueueOpen} isLoggedIn={isLoggedIn} onProfileClick={handleProfileClick} onSeek={handleSeek} />
+          <PlayerBar 
+            currentSong={currentSong} 
+            isPlaying={isPlaying} 
+            currentTime={currentTime} 
+            onTogglePlay={() => setIsPlaying(!isPlaying)} 
+            onToggleQueue={() => setIsQueueOpen(!isQueueOpen)} 
+            onOpenNowPlaying={() => setIsNowPlayingOpen(true)} 
+            onOpenComments={handleOpenComments}
+            isQueueOpen={isQueueOpen} 
+            isLoggedIn={isLoggedIn} 
+            onProfileClick={handleProfileClick} 
+            onSeek={handleSeek} 
+          />
           <PlaylistQueue isOpen={isQueueOpen} onClose={() => setIsQueueOpen(false)} currentSongId={currentSong.id} onPlaySong={handlePlaySong} />
-          <NowPlayingView isOpen={isNowPlayingOpen} onClose={() => setIsNowPlayingOpen(false)} currentSong={currentSong} isPlaying={isPlaying} currentTime={currentTime} onTogglePlay={() => setIsPlaying(!isPlaying)} onSeek={handleSeek} />
+          <NowPlayingView 
+            isOpen={isNowPlayingOpen} 
+            onClose={() => setIsNowPlayingOpen(false)} 
+            currentSong={currentSong} 
+            isPlaying={isPlaying} 
+            currentTime={currentTime} 
+            onTogglePlay={() => setIsPlaying(!isPlaying)} 
+            onOpenComments={handleOpenComments}
+            onSeek={handleSeek} 
+          />
         </>
       )}
     </div>

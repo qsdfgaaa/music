@@ -34,3 +34,20 @@ export interface BannerItem {
   subtitle: string;
   type: string;
 }
+
+export interface User {
+  id: string;
+  name: string;
+  avatar: string;
+  vipLevel?: number;
+}
+
+export interface Comment {
+  id: string;
+  user: User;
+  content: string;
+  time: string;
+  location: string;
+  likes: number;
+  replies?: Comment[];
+}

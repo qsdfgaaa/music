@@ -1,15 +1,16 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { MOCK_BANNERS, MOCK_PLAYLISTS, RECOMMENDED_SONGS, MOCK_RANKINGS, MOCK_ARTISTS } from '../constants';
+import { MOCK_BANNERS, MOCK_PLAYLISTS, RECOMMENDED_SONGS, MOCK_RANKINGS, MOCK_ARTISTS, Artist } from '../constants';
 import { Song, Playlist } from '../types';
 
 interface MusicHallProps {
   onPlaySong: (song?: Partial<Song>) => void;
   onPlaylistClick: (playlist: Playlist) => void;
+  onArtistClick?: (artist: Artist) => void;
   initialCategory?: string;
 }
 
-const MusicHall: React.FC<MusicHallProps> = ({ onPlaySong, onPlaylistClick, initialCategory = '精选' }) => {
+const MusicHall: React.FC<MusicHallProps> = ({ onPlaySong, onPlaylistClick, onArtistClick, initialCategory = '精选' }) => {
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [activeBannerIndex, setActiveBannerIndex] = useState(0);
@@ -65,14 +66,14 @@ const MusicHall: React.FC<MusicHallProps> = ({ onPlaySong, onPlaylistClick, init
   const renderArtists = () => (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-10 animate-in fade-in duration-500">
       {MOCK_ARTISTS.map((artist) => (
-        <div key={artist.id} className="group text-center cursor-pointer">
-          <div className="relative aspect-square rounded-full overflow-hidden mb-4 border-4 border-transparent group-hover:border-emerald-500/50 transition-all shadow-xl">
+        <div key={artist.id} className="group text-center cursor-pointer" onClick={() => onArtistClick?.(artist)}>
+          <div className="relative aspect-square rounded-full overflow-hidden mb-4 border-4 border-transparent group-hover:border-[#4fd1d9] transition-all shadow-xl">
             <img src={artist.avatar} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={artist.name} />
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             </div>
           </div>
-          <h4 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors mb-1">{artist.name}</h4>
+          <h4 className="text-lg font-bold text-white group-hover:text-[#4fd1d9] transition-colors mb-1">{artist.name}</h4>
           <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">{artist.fans} 粉丝</p>
         </div>
       ))}
