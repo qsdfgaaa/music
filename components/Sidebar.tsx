@@ -1,6 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { MOCK_MY_PLAYLISTS } from '../constants';
+import { Playlist } from '../types';
 
 const NavItem: React.FC<{ icon: React.ReactNode; label: string; active?: boolean; onClick?: () => void }> = ({ icon, label, active, onClick }) => (
   <div 
@@ -8,7 +9,7 @@ const NavItem: React.FC<{ icon: React.ReactNode; label: string; active?: boolean
     className={`flex items-center gap-3 px-4 py-2.5 rounded-lg cursor-pointer transition-all duration-200 group ${active ? 'bg-emerald-500/10 text-emerald-400' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}
   >
     <span className={`transition-transform group-hover:scale-110`}>{icon}</span>
-    <span className="text-sm font-medium">{label}</span>
+    <span className="text-sm font-medium truncate">{label}</span>
   </div>
 );
 
@@ -18,11 +19,20 @@ interface SidebarProps {
   onTabChange: (tab: string) => void;
   onProfileClick: () => void;
   onLogoutClick: () => void;
+  onPlaylistClick?: (playlist: Playlist) => void;
+  selectedPlaylistId?: string;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeTab, isLoggedIn, onTabChange, onProfileClick, onLogoutClick }) => {
+const Sidebar: React.FC<SidebarProps> = ({ 
+  activeTab, 
+  isLoggedIn, 
+  onTabChange, 
+  onProfileClick, 
+  onLogoutClick,
+  onPlaylistClick,
+  selectedPlaylistId
+}) => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [playlistTab, setPlaylistTab] = useState<'mine' | 'collected'>('mine');
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -122,38 +132,17 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, isLoggedIn, onTabChange, o
           </div>
         </div>
 
-        {/* 个人歌单模块 */}
-        <div className="mt-8">
-          <div className="px-4 flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2 text-sm font-bold text-slate-400">
-              <button 
-                onClick={() => setPlaylistTab('mine')}
-                className={`transition-colors ${playlistTab === 'mine' ? 'text-white' : 'hover:text-slate-200'}`}
-              >
-                自建歌单
-              </button>
-              <span className="text-slate-700 font-light">|</span>
-              <button 
-                onClick={() => setPlaylistTab('collected')}
-                className={`transition-colors ${playlistTab === 'collected' ? 'text-white' : 'hover:text-slate-200'}`}
-              >
-                收藏歌单
-              </button>
-            </div>
-            <button className="text-slate-500 hover:text-emerald-400 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-            </button>
-          </div>
-
+        <div className="mb-8">
+          <p className="px-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-4">创建的歌单</p>
           <div className="space-y-1">
-            {MOCK_MY_PLAYLISTS.map((pl) => (
-              <div 
-                key={pl.id} 
-                className="flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer hover:bg-white/5 group transition-all"
-              >
-                <img src={pl.cover} className="w-8 h-8 rounded-md object-cover shadow-md group-hover:scale-105 transition-transform" alt={pl.title} />
-                <span className="text-sm font-medium text-slate-400 group-hover:text-white truncate transition-colors">{pl.title}</span>
-              </div>
+            {MOCK_MY_PLAYLISTS.map((playlist) => (
+              <NavItem 
+                key={playlist.id} 
+                icon={<PlaylistIcon />} 
+                label={playlist.title} 
+                active={selectedPlaylistId === playlist.id}
+                onClick={() => onPlaylistClick?.(playlist)}
+              />
             ))}
           </div>
         </div>
@@ -168,5 +157,6 @@ const SparklesIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" he
 const MicIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>;
 const HeartIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>;
 const ClockIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
+const PlaylistIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v15l5-2 5 2V10"/><path d="M3 10h4"/></svg>;
 
 export default Sidebar;

@@ -124,6 +124,8 @@ const App: React.FC = () => {
             onTabChange={handleSidebarTabChange} 
             onProfileClick={handleProfileClick}
             onLogoutClick={handleLogout}
+            onPlaylistClick={handlePlaylistClick}
+            selectedPlaylistId={selectedPlaylist?.id}
           />
         )}
         <main className={`flex-1 flex flex-col min-w-0 transition-colors duration-500 ${activeTab === 'auth' ? 'bg-slate-900' : 'bg-slate-950'}`}>

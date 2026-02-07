@@ -42,11 +42,11 @@ export const USER_CREATIONS: ExtendedSong[] = [
   { id: 'u3', title: '凌晨三点的咖啡', artist: '陈子墨 (Alex)', album: '深夜食堂', duration: '05:20', cover: 'https://picsum.photos/seed/u3/400/400', playCount: '0', status: 'reviewing' },
 ];
 
-export const MOCK_RANKINGS = [
-  { id: 'r1', title: '飙升榜', cover: 'https://picsum.photos/seed/r1/400/400', color: 'from-orange-500/20' },
-  { id: 'r2', title: '热歌榜', cover: 'https://picsum.photos/seed/r2/400/400', color: 'from-red-500/20' },
-  { id: 'r3', title: '新歌榜', cover: 'https://picsum.photos/seed/r3/400/400', color: 'from-emerald-500/20' },
-  { id: 'r4', title: '流行指数', cover: 'https://picsum.photos/seed/r4/400/400', color: 'from-blue-500/20' },
+export const MOCK_RANKINGS: Playlist[] = [
+  { id: 'r1', title: '飙升榜', cover: 'https://picsum.photos/seed/r1/400/400', color: 'from-orange-500/20', isRanking: true, playCount: '99w+' },
+  { id: 'r2', title: '热歌榜', cover: 'https://picsum.photos/seed/r2/400/400', color: 'from-red-500/20', isRanking: true, playCount: '150w+' },
+  { id: 'r3', title: '新歌榜', cover: 'https://picsum.photos/seed/r3/400/400', color: 'from-emerald-500/20', isRanking: true, playCount: '80w+' },
+  { id: 'r4', title: '流行指数', cover: 'https://picsum.photos/seed/r4/400/400', color: 'from-blue-500/20', isRanking: true, playCount: '120w+' },
 ];
 
 export const MOCK_ARTISTS: Artist[] = [
@@ -75,12 +75,12 @@ export const MOCK_BANNERS: ExtendedBannerItem[] = [
 ];
 
 export const MOCK_PLAYLISTS: Playlist[] = [
-  { id: 'p1', title: '2024 年度全球热歌', cover: 'https://picsum.photos/seed/p1/300/300', playCount: '14.2亿' },
-  { id: 'p2', title: '深夜爵士小馆', cover: 'https://picsum.photos/seed/p2/300/300', playCount: '2.5亿' },
-  { id: 'p3', title: '专注工作：阿尔法波', cover: 'https://picsum.photos/seed/p3/300/300', playCount: '21.0亿' },
-  { id: 'p4', title: '燃脂健身电音', cover: 'https://picsum.photos/seed/p4/300/300', playCount: '8.3亿' },
-  { id: 'p5', title: '慵懒午后时光', cover: 'https://picsum.photos/seed/p5/300/300', playCount: '2.3亿' },
-  { id: 'p6', title: '沉浸式代码模式', cover: 'https://picsum.photos/seed/p6/300/300', playCount: '9.3亿' },
+  { id: 'p1', title: '2024 年度全球热歌', cover: 'https://picsum.photos/seed/p1/300/300', playCount: '14.2亿', description: "汇聚全年度全球范围内听歌量最高的 50 首单曲。" },
+  { id: 'p2', title: '深夜爵士小馆', cover: 'https://picsum.photos/seed/p2/300/300', playCount: '2.5亿', description: "萨克斯风与钢琴的缠绵，给每一个失眠之夜一点慰藉。" },
+  { id: 'p3', title: '专注工作：阿尔法波', cover: 'https://picsum.photos/seed/p3/300/300', playCount: '21.0亿', description: "白噪音与阿尔法波的结合，让你的工作效率翻倍。" },
+  { id: 'p4', title: '燃脂健身电音', cover: 'https://picsum.photos/seed/p4/300/300', playCount: '8.3亿', description: "128BPM 以上的强劲节奏，助你突破极限。" },
+  { id: 'p5', title: '慵懒午后时光', cover: 'https://picsum.photos/seed/p5/300/300', playCount: '2.3亿', description: "一杯咖啡，一本书，和一段恰到好处的背景音乐。" },
+  { id: 'p6', title: '沉浸式代码模式', cover: 'https://picsum.photos/seed/p6/300/300', playCount: '9.3亿', description: "专为程序员打造，滤掉喧嚣，只剩逻辑与旋律。" },
 ];
 
 export const CURRENT_SONG: Song = {

@@ -28,13 +28,7 @@ const LibraryView: React.FC<LibraryViewProps> = ({ type, onPlaySong }) => {
           desc: "记录你与音乐擦肩而过的每一个瞬间。"
         };
       default:
-        return {
-          title: "",
-          subtitle: "",
-          icon: null,
-          gradient: "",
-          desc: ""
-        };
+        return { title: "", subtitle: "", icon: null, gradient: "", desc: "" };
     }
   };
 
@@ -72,10 +66,9 @@ const LibraryView: React.FC<LibraryViewProps> = ({ type, onPlaySong }) => {
 
         {/* 歌曲列表部分 */}
         <section className="pb-40">
-          <div className="grid grid-cols-[60px_1fr_250px_100px] px-6 py-4 text-[10px] font-black text-slate-600 uppercase tracking-[0.25em] mb-2 border-b border-white/5">
+          <div className="grid grid-cols-[60px_1fr_100px] px-6 py-4 text-[10px] font-black text-slate-600 uppercase tracking-[0.25em] mb-2 border-b border-white/5">
             <span>#</span>
             <span>歌名/歌手</span>
-            <span>专辑</span>
             <span className="text-right pr-4">时长</span>
           </div>
 
@@ -83,7 +76,7 @@ const LibraryView: React.FC<LibraryViewProps> = ({ type, onPlaySong }) => {
             {RECOMMENDED_SONGS.map((song, idx) => (
               <div 
                 key={song.id}
-                className="grid grid-cols-[60px_1fr_250px_100px] items-center px-6 py-4 rounded-2xl transition-all group hover:bg-emerald-500/5 hover:translate-x-1 border border-transparent hover:border-emerald-500/10"
+                className="grid grid-cols-[60px_1fr_100px] items-center px-6 py-4 rounded-2xl transition-all group hover:bg-emerald-500/5 hover:translate-x-1 border border-transparent hover:border-emerald-500/10"
               >
                 <div className="text-xs font-mono font-bold text-slate-600 group-hover:text-emerald-500 transition-colors">
                   {(idx + 1).toString().padStart(2, '0')}
@@ -103,10 +96,6 @@ const LibraryView: React.FC<LibraryViewProps> = ({ type, onPlaySong }) => {
                     </div>
                     <span className="text-xs text-slate-500 font-bold group-hover:text-slate-400 transition-colors">{song.artist}</span>
                   </div>
-                </div>
-
-                <div className="text-sm font-medium text-slate-600 group-hover:text-slate-400 transition-colors truncate pr-6">
-                  {song.album}
                 </div>
 
                 <div className="text-xs font-mono font-bold text-slate-600 text-right pr-4 group-hover:text-emerald-500 transition-colors">

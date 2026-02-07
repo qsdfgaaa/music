@@ -10,103 +10,98 @@ interface PlaylistDetailViewProps {
 }
 
 const PlaylistDetailView: React.FC<PlaylistDetailViewProps> = ({ playlist, onBack, onPlaySong }) => {
+  // 使用项目统一的翡翠绿作为主色调背景，根据榜单或歌单属性匹配颜色
+  const bgColor = playlist.color || "from-emerald-500/20";
+
   return (
-    <div className="flex-1 flex flex-col overflow-hidden bg-slate-950 animate-in fade-in slide-in-from-right-5 duration-500">
-      {/* 顶部模糊背景 */}
-      <div className="absolute top-0 left-0 right-0 h-[450px] overflow-hidden -z-0">
-        <img src={playlist.cover} className="w-full h-full object-cover blur-[100px] opacity-20 scale-125" alt="" />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/20 via-slate-950/60 to-slate-950" />
+    <div className={`flex-1 flex flex-col overflow-hidden bg-gradient-to-b ${bgColor} via-slate-950/80 to-slate-950 animate-in fade-in duration-700 relative`}>
+      {/* 装饰性背景水印 */}
+      <div className="absolute top-0 left-0 right-0 h-full opacity-[0.03] pointer-events-none select-none flex items-center justify-center overflow-hidden">
+        <span className="text-[35rem] font-black text-white leading-none rotate-12 tracking-tighter">
+          {playlist.isRanking ? 'TOPCHART' : 'PLAYLIST'}
+        </span>
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10">
         {/* 顶部导航 */}
-        <div className="sticky top-0 px-8 py-6 flex items-center justify-between z-20">
+        <div className="px-8 py-6 flex items-center justify-between">
           <button 
             onClick={onBack}
-            className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
+            className="group flex items-center gap-2 text-white/60 hover:text-white transition-colors"
           >
             <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-all shadow-xl">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
             </div>
-            <span className="font-bold text-sm">返回</span>
           </button>
-
-          {/* 右侧扫码区域已根据要求删除 */}
-          <div className="invisible">
-            {/* 保持布局平衡的占位符 */}
-          </div>
         </div>
 
-        {/* 歌单信息头部 */}
-        <header className="px-12 pt-4 pb-12 flex gap-10">
-          <div className="relative group flex-shrink-0">
-            <div className="absolute -inset-2 bg-emerald-500/20 blur-2xl rounded-[40px] opacity-0 group-hover:opacity-100 transition-opacity" />
+        {/* 头部详情区 */}
+        <header className="px-12 pt-4 pb-16 flex gap-12 items-end">
+          <div className="relative group flex-shrink-0 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+            <div className="absolute -inset-1 bg-gradient-to-br from-emerald-500/20 to-transparent rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <img 
               src={playlist.cover} 
-              className="relative w-64 h-64 rounded-[40px] object-cover shadow-2xl border-2 border-white/5" 
+              className="relative w-56 h-56 rounded-2xl object-cover border border-white/10" 
               alt={playlist.title} 
             />
+            <div className="absolute bottom-3 left-3 w-8 h-8 bg-black/40 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity">
+               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            </div>
           </div>
 
-          <div className="flex-1 flex flex-col justify-center min-w-0">
-            <h1 className="text-5xl font-black text-white mb-4 tracking-tight leading-tight">{playlist.title}</h1>
-            
-            <div className="flex items-center gap-4 mb-6">
-              <div className="flex items-center gap-2">
-                <img src="https://picsum.photos/seed/user/32/32" className="w-6 h-6 rounded-full" alt="User" />
-                <span className="text-sm text-slate-300 font-bold hover:text-emerald-400 cursor-pointer transition-colors">又该换耳机了</span>
-              </div>
-              <div className="flex gap-2">
-                {["#伤感", "#网络歌曲", "#国语"].map(tag => (
-                  <span key={tag} className="text-xs font-bold text-slate-500 hover:text-emerald-500 transition-colors cursor-pointer">{tag}</span>
-                ))}
-              </div>
+          <div className="flex-1 flex flex-col pb-2">
+            <div className="flex items-center gap-3 mb-4">
+              <span className={`px-2 py-0.5 rounded border text-[10px] font-black uppercase tracking-widest ${playlist.isRanking ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' : 'bg-white/5 border-white/10 text-slate-400'}`}>
+                {playlist.isRanking ? 'Official Chart' : 'Curated Playlist'}
+              </span>
             </div>
-
-            <p className="text-slate-400 text-sm font-medium leading-relaxed max-w-2xl line-clamp-2 mb-8 italic">
-              {playlist.description || "我思念你却无法去找你，更不能向他人倾诉。这份思念仅仅只是空想。即使如此，我依旧思念你。爱随风而起，风起意难平。"}
-            </p>
+            <h1 className="text-6xl font-black text-white mb-6 tracking-tighter drop-shadow-lg">{playlist.title}</h1>
+            
+            <div className="flex items-center gap-6 text-slate-400 text-xs font-bold mb-10">
+              {playlist.isRanking ? (
+                <span className="flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  更新时间：2026-02-07
+                </span>
+              ) : (
+                <p className="max-w-xl line-clamp-1 italic opacity-80">{playlist.description}</p>
+              )}
+              <span className="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                {playlist.playCount} 次收听
+              </span>
+            </div>
 
             <div className="flex items-center gap-4">
               <button 
                 onClick={() => onPlaySong(RECOMMENDED_SONGS[0])}
-                className="flex items-center gap-3 px-8 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-white rounded-full shadow-xl shadow-emerald-500/20 transition-all active:scale-95 group"
+                className="flex items-center gap-3 px-8 py-3 bg-emerald-500 hover:bg-emerald-400 text-white rounded-full transition-all active:scale-95 shadow-xl shadow-emerald-500/20 group"
               >
-                <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                <div className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                 </div>
                 <span className="font-black text-sm uppercase tracking-widest">播放全部</span>
               </button>
 
-              <button className="flex items-center gap-3 px-8 py-3.5 bg-white/5 hover:bg-white/10 text-white rounded-full border border-white/10 transition-all active:scale-95 group">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-                <span className="font-black text-sm uppercase tracking-widest">收藏</span>
+              <button className="flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 text-white rounded-full transition-all active:scale-95 border border-white/5 font-bold text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                下载
               </button>
 
-              <button className="w-12 h-12 bg-white/5 hover:bg-white/10 flex items-center justify-center rounded-full border border-white/10 transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+              <button className="flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 text-white rounded-full transition-all active:scale-95 border border-white/5 font-bold text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="10" x2="21" y1="6" y2="6"/><line x1="10" x2="21" y1="12" y2="12"/><line x1="10" x2="21" y1="18" y2="18"/><path d="M4 6h1v1H4zm0 6h1v1H4zm0 6h1v1H4z"/></svg>
+                批量操作
               </button>
             </div>
           </div>
         </header>
 
-        {/* 标签页选择 */}
-        <nav className="px-12 flex gap-10 border-b border-white/5 mb-6">
-          <button className="relative py-4 text-base font-black text-emerald-400">
-            歌曲 61
-            <div className="absolute bottom-0 left-0 w-full h-1 bg-emerald-500 rounded-full" />
-          </button>
-          <button className="py-4 text-base font-bold text-slate-500 hover:text-white transition-colors">
-            评论 10
-          </button>
-        </nav>
-
         {/* 歌曲列表 */}
         <section className="px-12 pb-40">
-          <div className="grid grid-cols-[60px_1fr_40px_250px_100px] px-6 py-4 text-[10px] font-black text-slate-600 uppercase tracking-[0.25em] mb-2">
+          <div className="grid grid-cols-[60px_1fr_200px_200px_100px] px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.25em] mb-2 border-b border-white/5 bg-white/[0.01]">
             <span>#</span>
-            <span>歌名/歌手</span>
-            <span></span>
+            <span>歌曲</span>
+            <span>歌手</span>
             <span>专辑</span>
             <span className="text-right pr-4">时长</span>
           </div>
@@ -115,34 +110,41 @@ const PlaylistDetailView: React.FC<PlaylistDetailViewProps> = ({ playlist, onBac
             {RECOMMENDED_SONGS.map((song, idx) => (
               <div 
                 key={song.id}
-                className="grid grid-cols-[60px_1fr_40px_250px_100px] items-center px-6 py-4 rounded-2xl transition-all group hover:bg-emerald-500/5 hover:translate-x-1 border border-transparent hover:border-emerald-500/10"
+                className="grid grid-cols-[60px_1fr_200px_200px_100px] items-center px-6 py-3 rounded-xl transition-all group hover:bg-white/5 hover:translate-x-1"
               >
                 <div className="text-xs font-mono font-bold text-slate-600 group-hover:text-emerald-500 transition-colors">
                   {(idx + 1).toString().padStart(2, '0')}
                 </div>
 
-                <div className="flex items-center gap-4 min-w-0">
-                  <div className="relative w-12 h-12 flex-shrink-0 group/cover cursor-pointer rounded-lg overflow-hidden border-2 border-transparent group-hover:border-emerald-500/30 transition-all" onClick={() => onPlaySong(song)}>
-                    <img src={song.cover} className="w-full h-full object-cover group-hover/cover:scale-110 transition-transform" alt={song.title} />
-                    <div className="absolute inset-0 bg-emerald-950/60 opacity-0 group-hover/cover:opacity-100 flex items-center justify-center transition-opacity">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                    </div>
-                  </div>
-                  <div className="flex flex-col min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-base font-bold text-slate-200 group-hover:text-emerald-400 transition-colors truncate">{song.title}</span>
-                      {song.isVip && <span className="text-[8px] bg-emerald-500 text-white font-black px-1 py-0.5 rounded-sm">VIP</span>}
-                      {song.isHiRes && <span className="text-[8px] border border-emerald-500 text-emerald-500 px-1 py-0.5 rounded-sm bg-emerald-500/5">臻品母带</span>}
-                    </div>
-                    <span className="text-xs text-slate-500 font-bold group-hover:text-slate-400 transition-colors">{song.artist}</span>
+                <div className="flex items-center gap-5 min-w-0 pr-8">
+                  <button className="text-slate-600 hover:text-emerald-400 transition-colors flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                  </button>
+                  <div className="flex items-center gap-3 truncate">
+                    <span 
+                      onClick={() => onPlaySong(song)}
+                      className="text-base font-bold text-slate-200 cursor-pointer hover:text-emerald-400 truncate transition-colors"
+                    >
+                      {song.title}
+                    </span>
+                    {song.isHiRes && (
+                      <span className="text-[8px] font-black border border-emerald-500/40 text-emerald-400 px-1 rounded-sm bg-emerald-500/5 leading-none py-1 flex-shrink-0">
+                        臻品母带
+                      </span>
+                    )}
+                    {song.isVip && (
+                      <span className="text-[8px] font-black bg-emerald-500 text-slate-950 px-1 rounded-sm leading-none py-1 flex-shrink-0">
+                        VIP
+                      </span>
+                    )}
                   </div>
                 </div>
 
-                <button className="text-slate-600 hover:text-emerald-500 transition-colors">
-                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-                </button>
+                <div className="text-sm font-medium text-slate-400 group-hover:text-slate-200 transition-colors truncate pr-6">
+                  {song.artist}
+                </div>
 
-                <div className="text-sm font-medium text-slate-600 group-hover:text-slate-400 transition-colors truncate pr-6">
+                <div className="text-sm font-medium text-slate-500 group-hover:text-slate-300 transition-colors truncate pr-6 italic opacity-60">
                   {song.album}
                 </div>
 

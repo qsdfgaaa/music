@@ -11,6 +11,9 @@ export interface Song {
   album: string;
   cover: string;
   duration: string;
+  isVip?: boolean;
+  isHiRes?: boolean;
+  hasVideo?: boolean;
   lyrics?: LyricLine[];
 }
 
@@ -20,6 +23,8 @@ export interface Playlist {
   cover: string;
   playCount: string;
   description?: string;
+  isRanking?: boolean;
+  color?: string;
 }
 
 export interface BannerItem {
